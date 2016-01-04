@@ -1,3 +1,5 @@
+//Tip only for some error showing style.
+var tip = new Tip();
 function Validate(elem, config, resolved, rejected){
 	if(typeof elem==='object'){
 		config = elem;
@@ -81,6 +83,13 @@ function Validate(elem, config, resolved, rejected){
 		fn();
 		passAsync.fire(func);
 	};
+	fn.reset = function(){
+		while(fn._errors.length){
+			fn._errors.pop().removeClass('tip4validateError');
+		}
+	};
+	
+	fn._errors = [];
 	
 	//返回给提交按钮绑定的校验函数，用于自行绑定该事件。
 	return fn;
@@ -233,15 +242,17 @@ function Validate(elem, config, resolved, rejected){
 	
 	function reset(){
 		$(this).removeClass('tip4validateError');
+		//tip.hide();
 		return true;
 	}
 	
-	function error(elem, msg, fn){
-		if($.isFunction(fn)){
-			return fn.call(elem, 'tip4validateError', msg);
+	function error(elem, msg, callback){
+		fn._errors.push($(elem).addClass('tip4validateError'));
+		if($.isFunction(callback)){
+			callback.call(elem, 'tip4validateError', msg);
 		}else{
-			$(elem).addClass('tip4validateError');
-			return false;
+			tip.show(msg);
 		}
+		return false;
 	}
-};
+}
